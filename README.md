@@ -1,1 +1,2 @@
 # DemoAzureFunc
+test build
