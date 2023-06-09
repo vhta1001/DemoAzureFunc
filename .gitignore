@@ -1,0 +1,21 @@
+# vs
+.vs
+bin/
+obj/
+debug/
+*.DotSettings.user
+*.csproj.user
+*.user
+.vscode/settings.json
+*.orig
+
+# Data files
+*.jfm
+*.dbmdl
+
+# logs
+logs/
+
+# Dependency directories
+node_modules/
+output/
