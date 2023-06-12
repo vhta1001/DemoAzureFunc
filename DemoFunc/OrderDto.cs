@@ -9,5 +9,7 @@ namespace DemoFunc
         public DateTime TimePlaced { get; set; }
 
         public int OrderStatus { get; set; }
+
+        public decimal TotalAmount { get; set; }
     }
 }

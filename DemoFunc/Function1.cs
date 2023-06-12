@@ -1,9 +1,11 @@
+using DemoFunc.Database;
+using DemoFunc.Helpers;
+using DemoFunc.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DemoFunc
@@ -15,16 +17,33 @@ namespace DemoFunc
         {
             int i = 0;
 
-            await foreach (List<OrderDto> orderDtos in GetOrdersAsync())
+            var a = ExportCatalog(log);
+
+            log.LogInformation($"Export {a.Status}.");
+        }
+
+        private async Task<FeedETLResult> ExportCatalog(ILogger log)
+        {
+            FeedETLResult allExports;
+            try
             {
-                foreach (OrderDto orderDto in orderDtos)
+                TransformerExporter.Initialize();
+
+                await foreach (List<OrderDto> orderDtos in GetOrdersAsync())
                 {
-                    i++;
-                    log.LogInformation(JsonSerializer.Serialize(orderDto));
+                    TransformerExporter.Transform(orderDtos);
                 }
+
+                log.LogInformation("Transforming complete, starting exports.");
+
+                allExports = await TransformerExporter.CompleteAndExportAsync();
+            }
+            catch (Exception ex)
+            {
+                allExports = new FeedETLResult(FeedETLStatus.FailureOnLoad, ex.Message);
             }
 
-            log.LogError(i.ToString());
+            return allExports;
         }
 
         public IAsyncEnumerable<List<OrderDto>> GetOrdersAsync()
@@ -36,7 +55,7 @@ namespace DemoFunc
         {
             int pageIndex = 0;
 
-            List<OrderDto> orders = await GetOrderDtos(pageSize, pageIndex);
+            List<OrderDto> orders = await AzureDataLayer.GetOrdersAsync(pageIndex, pageSize);
 
             yield return orders;
 
