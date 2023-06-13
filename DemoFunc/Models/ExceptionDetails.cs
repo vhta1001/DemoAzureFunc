@@ -14,9 +14,9 @@ namespace DemoFunc.Models
                 InnerException = new ExceptionDetails(e.InnerException);
         }
         public string Message { get; init; }
-        public string? StackTrace { get; init; }
-        public string? Source { get; init; }
+        public string StackTrace { get; init; }
+        public string Source { get; init; }
         public System.Collections.IDictionary Data { get; init; }
-        public ExceptionDetails? InnerException { get; init; }
+        public ExceptionDetails InnerException { get; init; }
     }
 }

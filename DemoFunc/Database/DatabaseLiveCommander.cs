@@ -60,22 +60,16 @@ namespace DemoFunc.Database
 
         public async Task<T> UseConnectionAsync<T>(Func<SqlConnection, Task<T>> useConnection)
         {
-            try
-            {
-                if (connection.State != ConnectionState.Open)
-                    await connection.OpenAsync();
-                return await useConnection(connection);
-            }
-            catch (Exception e)
-            {
-                //LogLevel.Error.WriteConsoleLog($"Failed to UseConnection: {e.Message}");
-                throw;
-            }
+            if (connection.State != ConnectionState.Open)
+                await connection.OpenAsync();
+            return await useConnection(connection);
         }
+
         public Task<int> ExecuteScalarToIntAsync(string query, params SqlParameter[] parameters)
         {
             return ExecuteScalarToIntAsync(query, CommandType.Text, parameters);
         }
+
         public async Task<int> ExecuteScalarToIntAsync(string query, CommandType type, params SqlParameter[] parameters)
         {
             var result = await ExecuteScalarAsync(query, parameters);
@@ -117,7 +111,6 @@ namespace DemoFunc.Database
                 return ret;
             }, query, type, parameters);
         }
-
 
         public Task<List<T>> QueryManyListAsync<T>(string query, Func<DbDataReader, IEnumerable<T>> dataReaderTransformer,
             params SqlParameter[] parameters)
@@ -246,10 +239,6 @@ namespace DemoFunc.Database
                     {
                         var le = new ArgumentException($"An item with the same key '{key}' has already been added.", ae);
                         throw le;
-                    }
-                    catch
-                    {
-                        throw;
                     }
                 }
                 return ret;
@@ -420,45 +409,6 @@ namespace DemoFunc.Database
                 return ret;
             }, query, type, parameters);
         }
-
-        ///// <summary>
-        ///// Allows executing the same query multiple times with different parameters
-        ///// </summary>
-        //public Task ExecuteNonQueryMultipleTimes<T>(string storedProcedure, List<SqlParameterAssigner<T>> parameters, List<T> values, Action<Exception, T> logger, CommandType type = CommandType.StoredProcedure)
-        //{
-        //    return UseCommandAsync(async (command) =>
-        //    {
-        //        command.CommandType = type;
-
-        //        // Usually its bad to use 
-        //        var parameterValueLookup = parameters.ToDictionary(p => p.Parameter.ParameterName, p => p.GetValue);
-
-        //        int sum = 0;
-        //        foreach (var value in values)
-        //        {
-        //            foreach (SqlParameter p in command.Parameters)
-        //            {
-        //                var updaterFunc = parameterValueLookup[p.ParameterName];
-        //                if (updaterFunc != null)
-        //                    p.Value = parameterValueLookup[p.ParameterName](value);
-
-        //                if (p.Value is null)
-        //                    p.Value = DBNull.Value;
-        //            }
-
-        //            try
-        //            {
-        //                sum += await command.ExecuteNonQueryAsync();
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                logger(ex, value);
-        //            }
-        //        }
-
-        //        return sum;
-        //     }, storedProcedure, parameters.Select(p => p.Parameter).ToArray());
-        //}
 
         public void Dispose()
         {

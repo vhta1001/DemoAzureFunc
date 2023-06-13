@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DemoFunc
+namespace DemoFunc.Models
 {
     public class OrderDto
     {

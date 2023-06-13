@@ -13,7 +13,7 @@ namespace DemoFunc.Helpers
         private static readonly string azureConnectionString = "DefaultEndpointsProtocol=https;AccountName=anvutest;AccountKey=EvwtB8nOV7Mf4CcOuxPzq9ZFyQptCLjq/oCwE+PiXX+M3rw+P7GHCKyPiS26om16OCXnGP36pDIk+AStugLYcA==;EndpointSuffix=core.windows.net";
         private static readonly string containerName = "testing";
 
-        public static async Task<FeedETLResult> ExportAsync(TransformData data)
+        public static async Task<FeedEtlResult> ExportAsync(TransformData data)
         {
             BlobContainerClient blobContainerClient = new(azureConnectionString, containerName);
 
@@ -21,7 +21,7 @@ namespace DemoFunc.Helpers
             BlobClient blobClient = blobContainerClient.GetBlobClient(fileName);
             _ = await blobClient.UploadAsync(BinaryData.FromString(data.Contents), overwrite: true);
 
-            return FeedETLResult.Success;
+            return FeedEtlResult.Success;
         }
 
         public static async Task<TransformData> GetAsync()

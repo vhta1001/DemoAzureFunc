@@ -1,5 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
-using System;
+﻿using DemoFunc.Models;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,11 +12,9 @@ namespace DemoFunc.Database
 
         public static async Task<List<OrderDto>> GetOrdersAsync(int pageIndex, int pageSize)
         {
-            try
-            {
-                using DatabaseLiveCommander commander = new DatabaseLiveCommander(ConnectionString, 120);
+            using DatabaseLiveCommander commander = new(ConnectionString, 120);
 
-                string sql = @"SELECT [OrderId],
+            string sql = @"SELECT [OrderId],
                                     [OrderStatus],
                                     [TimePlaced],
                                     [TotalAmount]
@@ -25,22 +23,17 @@ namespace DemoFunc.Database
                                     OFFSET @pageIndex*@pageSize ROWS
                                     FETCH NEXT @pageSize ROWS ONLY;";
 
-                var orders = await commander.QueryListAsync(sql, (dr) => new OrderDto
-                {
-                    OrderId = dr.GetGuid(0),
-                    OrderStatus = dr.GetInt32(1),
-                    TimePlaced = dr.GetDateTime(2),
-                    TotalAmount = dr.GetDecimal(3),
-                },
-                        new SqlParameter("pageIndex", pageIndex),
-                        new SqlParameter("pageSize", pageSize));
-
-                return orders;
-            }
-            catch (Exception ex)
+            var orders = await commander.QueryListAsync(sql, (dr) => new OrderDto
             {
-                return new List<OrderDto>();
-            }
+                OrderId = dr.GetGuid(0),
+                OrderStatus = dr.GetInt32(1),
+                TimePlaced = dr.GetDateTime(2),
+                TotalAmount = dr.GetDecimal(3),
+            },
+                    new SqlParameter("pageIndex", pageIndex),
+                    new SqlParameter("pageSize", pageSize));
+
+            return orders;
         }
     }
 }

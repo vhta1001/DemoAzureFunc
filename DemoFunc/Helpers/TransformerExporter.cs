@@ -15,25 +15,25 @@ namespace DemoFunc.Helpers
             return CsvTransformer.Complete();
         }
 
-        public static async Task<FeedETLResult> CompleteAndExportAsync()
+        public static async Task<FeedEtlResult> CompleteAndExportAsync()
         {
             try
             {
-                TransformData? data;
+                TransformData data;
                 try
                 {
                     data = CsvTransformer.Complete();
                 }
                 catch (Exception e)
                 {
-                    return FeedETLResult.FailureOnTransform(e);
+                    return FeedEtlResult.FailureOnTransform(e);
                 }
 
                 return await AzureBlobExporter.ExportAsync(data);
             }
             catch (Exception e)
             {
-                return FeedETLResult.FailureOnExport(e);
+                return FeedEtlResult.FailureOnExport(e);
             }
         }
 

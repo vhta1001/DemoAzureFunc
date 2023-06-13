@@ -8,7 +8,7 @@ namespace DemoFunc.Helpers
 {
     public static class CsvTransformer
     {
-        private static readonly StringBuilder sb = new StringBuilder(5000 * 100);
+        private static readonly StringBuilder sb = new(5000 * 100);
         private static char Seperator => ',';
         private static bool UseQuotationOnHeader => true;
 
@@ -20,7 +20,7 @@ namespace DemoFunc.Helpers
 
             // HEADERS
             if (!headers.Any())
-                throw new Exception("Header contained no elements");
+                throw new ArgumentException("Header contained no elements");
 
             if (UseQuotationOnHeader)
                 AppendLine(headers);
@@ -35,7 +35,7 @@ namespace DemoFunc.Helpers
             {
                 var prodRow = GetOrderRows(order);
                 if (!prodRow.Any())
-                    throw new Exception("ProdRow contained no elements");
+                    throw new ArgumentException("ProdRow contained no elements");
 
                 AppendLine(prodRow);
             }
